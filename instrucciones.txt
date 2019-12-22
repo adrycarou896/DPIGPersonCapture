@@ -1,0 +1,6 @@
+Parametros:
+-Ruta destino de las imágenes en la que se quiere guardar los rostros detectados
+(una carpeta por camara)
+-Ruta destino de donde se quieren guardar las imagenes buenas, una vez borradas
+las que no nos interesan
+(una carpeta por usuario)
