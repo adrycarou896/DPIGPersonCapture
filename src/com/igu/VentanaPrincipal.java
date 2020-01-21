@@ -11,13 +11,14 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 import com.model.IPCamera;
-import com.smarthings.IPCamerasManager;
+import com.smarthings.IPCameraManager;
 import com.utils.Util;
 
 import javafx.application.Platform;
@@ -27,12 +28,14 @@ import javafx.scene.Scene;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
+import java.awt.Color;
+import javax.swing.border.LineBorder;
 
 public class VentanaPrincipal extends JFrame {
 
 	private JPanel contentPane;
 	
-	IPCamerasManager ipCamerasManager;
+	IPCameraManager ipCamerasManager;
 	List<IPCamera> ipCameras;
 	
 	private String videoPath;
@@ -89,16 +92,18 @@ public class VentanaPrincipal extends JFrame {
 	 * Create the frame.
 	 */
 	public VentanaPrincipal(Util util) {
+		setTitle("DPIGPersonCapture");
 		System.load(Util.LOAD_OPENCV_PATH);
 		
 		this.util = util;
 		
-		this.ipCamerasManager = new IPCamerasManager();
-		this.ipCameras = ipCamerasManager.findDevices();
+		this.ipCamerasManager = new IPCameraManager();
+		this.ipCameras = ipCamerasManager.getIPCameras();
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 973, 777);
 		contentPane = new JPanel();
+		contentPane.setBackground(Color.WHITE);
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		setLocationRelativeTo(null);
@@ -144,7 +149,7 @@ public class VentanaPrincipal extends JFrame {
 	
 	public String getCameraVideoURL(IPCamera camera){
 		try {
-			return ipCamerasManager.getVideoURL(camera.getDeviceId());
+			return ipCamerasManager.getIPCameraVideoURL(camera.getDeviceId());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -153,7 +158,7 @@ public class VentanaPrincipal extends JFrame {
 	
 	public void saveFile(String videoURL, String destinationFile){
 		try {
-			this.ipCamerasManager.saveFile(videoURL, destinationFile);
+			this.ipCamerasManager.saveVideoFromURL(videoURL, destinationFile);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -165,6 +170,7 @@ public class VentanaPrincipal extends JFrame {
 	private JPanel getPanelTop() {
 		if (panelTop == null) {
 			panelTop = new JPanel();
+			panelTop.setBackground(Color.WHITE);
 			panelTop.setLayout(new GridLayout(1, 0, 0, 0));
 			panelTop.add(getLblCmaras());
 			panelTop.add(getComboCamaras());
@@ -177,7 +183,7 @@ public class VentanaPrincipal extends JFrame {
 	}
 	private JLabel getLblCmaras() {
 		if (lblCmaras == null) {
-			lblCmaras = new JLabel("Cámaras: ");
+			lblCmaras = new JLabel("C\u00E1maras: ");
 			lblCmaras.setHorizontalAlignment(SwingConstants.RIGHT);
 		}
 		return lblCmaras;
@@ -185,6 +191,7 @@ public class VentanaPrincipal extends JFrame {
 	public JComboBox getComboCamaras() {
 		if (comboCamaras == null) {
 			comboCamaras = new JComboBox();
+			comboCamaras.setForeground(Color.BLACK);
 			
 			for (IPCamera ipCamera : ipCameras) {
 				this.comboCamaras.addItem(ipCamera.getName());
@@ -208,6 +215,7 @@ public class VentanaPrincipal extends JFrame {
 		if (panelVideo == null) {
 			panelVideo = new JPanel();
 			panelVideo.setLayout(new BorderLayout(0, 0));
+			jfxPanel.setBorder(new LineBorder(new Color(0, 0, 0), 2));
 			
 			jfxPanel.setBounds(10, 90, 882, 604);
 			panelVideo.add(jfxPanel);
@@ -219,6 +227,7 @@ public class VentanaPrincipal extends JFrame {
 	private JPanel getPanelDown() {
 		if (panelDown == null) {
 			panelDown = new JPanel();
+			panelDown.setBackground(Color.WHITE);
 			panelDown.setLayout(new GridLayout(1, 0, 0, 0));
 			panelDown.add(getLblNombreDelUsuario());
 			panelDown.add(getCampoUsuario());
@@ -237,13 +246,15 @@ public class VentanaPrincipal extends JFrame {
 	private JButton getBtVerVideo() {
 		if (btVerVideo == null) {
 			btVerVideo = new JButton("Ver video");
+			btVerVideo.setToolTipText("Visualizar el \u00FAltimo video de la c\u00E1mara seleccionada");
 			btVerVideo.addActionListener(new AccionBotonVerVideo(this));
 		}
 		return btVerVideo;
 	}
 	private JLabel getLblNombreDelUsuario() {
 		if (lblNombreDelUsuario == null) {
-			lblNombreDelUsuario = new JLabel("Nombre del usuario: ");
+			lblNombreDelUsuario = new JLabel("Nombre del individuo: ");
+			lblNombreDelUsuario.setBackground(Color.WHITE);
 			lblNombreDelUsuario.setHorizontalAlignment(SwingConstants.RIGHT);
 		}
 		return lblNombreDelUsuario;
@@ -258,6 +269,8 @@ public class VentanaPrincipal extends JFrame {
 	private JButton getBtGuardarRostros() {
 		if (btGuardarRostros == null) {
 			btGuardarRostros = new JButton("Guardar rostros");
+			btGuardarRostros.setFocusPainted(false);
+			btGuardarRostros.setToolTipText("Guardar todos los rostros detectados en el actual video");
 			btGuardarRostros.addActionListener(new AccionBotonGuardarFrames(this));
 		}
 		return btGuardarRostros;
@@ -265,6 +278,7 @@ public class VentanaPrincipal extends JFrame {
 	private JButton getBtRestablecerNombres() {
 		if (btRestablecerNombres == null) {
 			btRestablecerNombres = new JButton("Restablecer nombres");
+			btRestablecerNombres.setFocusPainted(false);
 			btRestablecerNombres.addActionListener(new AcctionBotonRestablecerNombres(this));
 		}
 		return btRestablecerNombres;
@@ -272,18 +286,22 @@ public class VentanaPrincipal extends JFrame {
 	private JPanel getPanel_1() {
 		if (panel_1 == null) {
 			panel_1 = new JPanel();
+			panel_1.setBackground(Color.WHITE);
 		}
 		return panel_1;
 	}
 	private JPanel getPanel_2() {
 		if (panel_2 == null) {
 			panel_2 = new JPanel();
+			panel_2.setBackground(Color.WHITE);
 		}
 		return panel_2;
 	}
 	private JButton getBtGuardarParaUso() {
 		if (btGuardarParaUso == null) {
 			btGuardarParaUso = new JButton("Guardar para uso");
+			btGuardarParaUso.setFocusPainted(false);
+			btGuardarParaUso.setToolTipText("Enviar im\u00E1genes al directorio destino para su uso");
 			btGuardarParaUso.addActionListener(new AccionBotonGuardarParaUso(this));
 		}
 		return btGuardarParaUso;

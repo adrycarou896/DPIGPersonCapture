@@ -9,7 +9,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
 
-import com.utils.Util;
+import javax.swing.JOptionPane;
 
 public class AccionBotonGuardarParaUso implements ActionListener{
 	
@@ -25,7 +25,7 @@ public class AccionBotonGuardarParaUso implements ActionListener{
 		String cameraSelectedName = ventanaPrincipal.getComboCamaras().getSelectedItem().toString();
 		String userName = ventanaPrincipal.getCampoUsuario().getText();
 		
-		if(!userName.equals("")){
+		if(!userName.isEmpty()){
 			FilenameFilter imgFilter = new FilenameFilter() { 
 				public boolean accept(File dir, String name) { 
 	                name = name.toLowerCase(); 
@@ -44,7 +44,6 @@ public class AccionBotonGuardarParaUso implements ActionListener{
 	        }
 	        
 	        if(userFolder.exists()){
-	        	
 	        	 for (File userImage : userFolder.listFiles(imgFilter)) {
 	        		 try{
 	 	        		FileInputStream fis = new FileInputStream(userImage); //inFile -> Archivo a copiar
@@ -63,7 +62,14 @@ public class AccionBotonGuardarParaUso implements ActionListener{
 	 	        		System.err.println("Error al Generar Copia 1");
 	 		        }
 	        	 }
+	 	        JOptionPane.showMessageDialog(null, "Las imágenes se han enviado correctamente para su uso");
 	        }
+	        else{
+	        	JOptionPane.showMessageDialog(null, "No existe una ruta para las imágenes de este individuo", "Error ruta de imágenes", JOptionPane.ERROR_MESSAGE);
+	        }
+		}
+		else{
+			JOptionPane.showMessageDialog(null, "El nombre del individuo no está especificado", "Error nombre individuo", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 	

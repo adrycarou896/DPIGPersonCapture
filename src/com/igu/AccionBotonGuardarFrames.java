@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.util.List;
 
 import javax.imageio.ImageIO;
+import javax.swing.JOptionPane;
 
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
@@ -30,57 +31,65 @@ public class AccionBotonGuardarFrames implements ActionListener{
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		ReconocimientoFacialEntrenamiento reconocimientoFacialPrueba = new ReconocimientoFacialEntrenamiento();
+		FacialDetection reconocimientoFacialPrueba = new FacialDetection();
 		reconocimientoFacialPrueba.setConf();
 
 		String cameraSelectedName = ventanaPrincipal.getComboCamaras().getSelectedItem().toString();
 		String userName = ventanaPrincipal.getCampoUsuario().getText();
 		if(ventanaPrincipal.getVideoPath()!=null){
-			String userFolder = this.ventanaPrincipal.getUtil().getFolderCamerasPath()+"/"+cameraSelectedName+"/Frames/"+userName;
-			File videoFolder = new File(userFolder);
-			if(!videoFolder.exists()){
-				videoFolder.mkdirs();
-			}
-			
-			ReadVideoFrames decodeAndCaptureFrames;
-			try {
-				decodeAndCaptureFrames = new ReadVideoFrames(ventanaPrincipal.getVideoPath());
-				List<BufferedImage>images = decodeAndCaptureFrames.getImages();
-				
-				FilenameFilter imgFilter = new FilenameFilter() { 
-					public boolean accept(File dir, String name) { 
-		                name = name.toLowerCase(); 
-		                return name.endsWith(".jpg") || name.endsWith(".pgm") || name.endsWith(".png"); 
-		            } 
-		        }; 
-		        
-				 String userMainFolderPath = this.ventanaPrincipal.getUtil().getFolderUsersPath()+"/"+userName;
-		         File userMainFolder = new File(userMainFolderPath);
-		         if(!userMainFolder.exists()){
-		        	 userMainFolder.mkdirs();
-		          }
-			       
-			    File[] userMainImages = userMainFolder.listFiles(imgFilter);
-			        
-			        
-			    int cont = userMainImages.length+1;
-				for (BufferedImage image : images) {
-					ByteArrayOutputStream os = new ByteArrayOutputStream();
-					ImageIO.write(image, "jpg", os);
-					InputStream is = new ByteArrayInputStream(os.toByteArray());
-					
-					Mat frame = readInputStreamIntoMat(is);
-					Mat frame_gray = new Mat();
-					
-					reconocimientoFacialPrueba.reconocerRostroYGuardar(frame, frame_gray, cont, userFolder, cameraSelectedName);
-					
-					cont++;
+			if(!userName.isEmpty()){
+				String userFolder = this.ventanaPrincipal.getUtil().getFolderCamerasPath()+"/"+cameraSelectedName+"/Frames/"+userName;
+				File videoFolder = new File(userFolder);
+				if(!videoFolder.exists()){
+					videoFolder.mkdirs();
 				}
 				
-			} catch (Exception e1) {
-				e1.printStackTrace();
-			}	
-		}	
+				ReadVideoFrames decodeAndCaptureFrames;
+				try {
+					decodeAndCaptureFrames = new ReadVideoFrames(ventanaPrincipal.getVideoPath());
+					List<BufferedImage>images = decodeAndCaptureFrames.getImages();
+					
+					FilenameFilter imgFilter = new FilenameFilter() { 
+						public boolean accept(File dir, String name) { 
+			                name = name.toLowerCase(); 
+			                return name.endsWith(".jpg") || name.endsWith(".pgm") || name.endsWith(".png"); 
+			            } 
+			        }; 
+			        
+					 String userMainFolderPath = this.ventanaPrincipal.getUtil().getFolderUsersPath()+"/"+userName;
+			         File userMainFolder = new File(userMainFolderPath);
+			         if(!userMainFolder.exists()){
+			        	 userMainFolder.mkdirs();
+			          }
+				       
+				    File[] userMainImages = userMainFolder.listFiles(imgFilter);
+				        
+				        
+				    int cont = userMainImages.length+1;
+					for (BufferedImage image : images) {
+						ByteArrayOutputStream os = new ByteArrayOutputStream();
+						ImageIO.write(image, "jpg", os);
+						InputStream is = new ByteArrayInputStream(os.toByteArray());
+						
+						Mat frame = readInputStreamIntoMat(is);
+						Mat frame_gray = new Mat();
+						
+						cont = cont + reconocimientoFacialPrueba.reconocerRostroYGuardar(frame, frame_gray, cont, userFolder, cameraSelectedName);
+					}
+					
+					JOptionPane.showMessageDialog(null, "Se han detectado y almacenado los rostros correctamente");
+					
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}	
+			}
+			else{
+				JOptionPane.showMessageDialog(null, "El nombre del individuo no está especificado", "Error nombre individuo", JOptionPane.ERROR_MESSAGE);
+			}
+		}
+		else{
+			JOptionPane.showMessageDialog(null, "No existe ningún video", "Error video", JOptionPane.ERROR_MESSAGE);
+		}
 		
 	}
 	
