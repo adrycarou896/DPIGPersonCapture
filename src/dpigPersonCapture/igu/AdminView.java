@@ -12,18 +12,21 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
-import dpigPersonCapture.igu.actions.AccionBotonGuardarFrames;
-import dpigPersonCapture.igu.actions.AccionBotonGuardarParaUso;
-import dpigPersonCapture.igu.actions.AccionBotonVerVideo;
-import dpigPersonCapture.igu.actions.AcctionBotonRestablecerNombres;
+import dpigPersonCapture.facialDetection.FacialDetection;
+import dpigPersonCapture.igu.actions.ResetImagesNamesActionButtom;
+import dpigPersonCapture.igu.actions.SendForUseActionButtom;
+import dpigPersonCapture.igu.actions.SaveFacesActionButtom;
+import dpigPersonCapture.igu.actions.ViewVideoAction;
 import dpigPersonCapture.model.IPCamera;
 import dpigPersonCapture.smartThings.IPCameraManager;
+import dpigPersonCapture.utils.Messages;
 import dpigPersonCapture.utils.Util;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
@@ -64,6 +67,8 @@ public class AdminView extends JFrame {
 	
 	private Util util;
 	
+	private FacialDetection facialDetection;
+	
 	/**
 	 * Launch the application.
 	 */
@@ -79,7 +84,7 @@ public class AdminView extends JFrame {
 		
 		Util util = new Util();
 		util.setFolderCamerasPath(folderCamerasPath);
-		util.setFolderUsersPath(folderUsersPath);
+		util.setFolderPersonsPath(folderUsersPath);
 		util.setSmartThingsToken(smartThingsToken);
 		
 		IPCameraManager ipCameraManager = new IPCameraManager(smartThingsToken);
@@ -127,6 +132,8 @@ public class AdminView extends JFrame {
 		setLocationRelativeTo(null);
 		
 		getPanel();
+		
+		this.facialDetection = new FacialDetection();
 		
 		
 	}
@@ -265,7 +272,7 @@ public class AdminView extends JFrame {
 		if (btVerVideo == null) {
 			btVerVideo = new JButton("Ver video");
 			btVerVideo.setToolTipText("Visualizar el \u00FAltimo video de la c\u00E1mara seleccionada");
-			btVerVideo.addActionListener(new AccionBotonVerVideo(this));
+			btVerVideo.addActionListener(new ViewVideoAction(this));
 		}
 		return btVerVideo;
 	}
@@ -289,7 +296,7 @@ public class AdminView extends JFrame {
 			btGuardarRostros = new JButton("Guardar rostros");
 			btGuardarRostros.setFocusPainted(false);
 			btGuardarRostros.setToolTipText("Guardar todos los rostros detectados en el actual video");
-			btGuardarRostros.addActionListener(new AccionBotonGuardarFrames(this));
+			btGuardarRostros.addActionListener(new SaveFacesActionButtom(this));
 		}
 		return btGuardarRostros;
 	}
@@ -297,7 +304,7 @@ public class AdminView extends JFrame {
 		if (btRestablecerNombres == null) {
 			btRestablecerNombres = new JButton("Restablecer nombres");
 			btRestablecerNombres.setFocusPainted(false);
-			btRestablecerNombres.addActionListener(new AcctionBotonRestablecerNombres(this));
+			btRestablecerNombres.addActionListener(new ResetImagesNamesActionButtom(this));
 		}
 		return btRestablecerNombres;
 	}
@@ -320,7 +327,7 @@ public class AdminView extends JFrame {
 			btGuardarParaUso = new JButton("Guardar para uso");
 			btGuardarParaUso.setFocusPainted(false);
 			btGuardarParaUso.setToolTipText("Enviar im\u00E1genes al directorio destino para su uso");
-			btGuardarParaUso.addActionListener(new AccionBotonGuardarParaUso(this));
+			btGuardarParaUso.addActionListener(new SendForUseActionButtom(this));
 		}
 		return btGuardarParaUso;
 	}
@@ -328,4 +335,37 @@ public class AdminView extends JFrame {
 	public Util getUtil(){
 		return this.util;
 	}
+
+	public FacialDetection getFacialDetection() {
+		return facialDetection;
+	}
+	
+	public void showMessage(String message){
+		switch (message) {
+		case Messages.saveFramesSuccesfully:
+			JOptionPane.showMessageDialog(null, Messages.saveFramesSuccesfully);
+			break;
+		case Messages.personNameError:
+			JOptionPane.showMessageDialog(null, Messages.saveFramesSuccesfully, Messages.personNameErrorHeader, JOptionPane.ERROR_MESSAGE);
+			break;
+		case Messages.cameraNameError:
+			JOptionPane.showMessageDialog(null, Messages.cameraNameError, Messages.cameraNameErrorHeader, JOptionPane.ERROR_MESSAGE);
+			break;
+		case Messages.videoError:
+			JOptionPane.showMessageDialog(null, Messages.videoError, Messages.videoErrorHeader, JOptionPane.ERROR_MESSAGE);
+			break;
+		case Messages.pathError:
+			JOptionPane.showMessageDialog(null, Messages.pathError, Messages.pathErrorHeader, JOptionPane.ERROR_MESSAGE);
+			break;
+		case Messages.resetImagesNamesSuccesfuly:
+			JOptionPane.showMessageDialog(null, Messages.resetImagesNamesSuccesfuly);
+			break;
+		case Messages.trainingPathNotExistError:
+			JOptionPane.showMessageDialog(null, Messages.trainingPathNotExistError, Messages.trainingPathNotExistErrorHeader, JOptionPane.ERROR_MESSAGE);
+			break;
+		default:
+			break;
+		}
+	}
+	
 }

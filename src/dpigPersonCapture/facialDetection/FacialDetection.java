@@ -5,15 +5,22 @@ import static org.opencv.objdetect.Objdetect.CASCADE_SCALE_IMAGE;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBuffer;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.imageio.ImageIO;
 
 import org.opencv.core.Mat;
+import org.opencv.core.MatOfByte;
 import org.opencv.core.MatOfRect;
-import org.opencv.core.Point;
 import org.opencv.core.Rect;
-import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
@@ -28,13 +35,16 @@ public class FacialDetection {
     
     private MatOfRect rostros;//Guarda los rostros que va capturando
     
-    public void setConf(){
+    private Map<String, File[]> imagesFalsesPostives;
+    
+    public FacialDetection(){
     	this.Cascade = new CascadeClassifier(Util.CASCADE_PATH);
+    	this.imagesFalsesPostives = new HashMap<String, File[]>();
     	//this.CascadeEyes = new CascadeClassifier("C:\\opencv\\sources\\data\\haarcascades\\haarcascade_eye.xml");
     }
 
     //Mat frame_gray = new Mat();
-    public int reconocerRostroYGuardar(Mat frame, Mat frame_gray, int cont, String userFolderPath, String cameraName) throws Exception{
+    public int detectAndSave(Mat frame, Mat frame_gray, int cont, String camerasFolderPath, String cameraName) throws Exception{
     	this.rostros = new MatOfRect();
     	
     	Imgproc.cvtColor(frame, frame_gray, Imgproc.COLOR_BGR2GRAY);//Colvierte la imagene a color a blanco y negro
@@ -62,7 +72,7 @@ public class FacialDetection {
 				
 			}*/
         	
-    		String srcSalida = userFolderPath+"/"+cameraName+"_img"+cont+".jpg";
+    		String srcSalida = camerasFolderPath+"/"+cameraName+"_img"+cont+".jpg";
     		
     		Mat frameFinal = new Mat();
     		Imgproc.resize(frameRecortado, frameFinal, new Size(52,52));
@@ -70,31 +80,80 @@ public class FacialDetection {
     		//Se guarda la imagen
     		Imgcodecs.imwrite(srcSalida, frameFinal);
     		
-    		numRostro++;
-    		cont++;
-
+    		if(!this.imagesFalsesPostives.containsKey(cameraName)){//Si no se quiere utilizar la bbdd de falsos positivos -> actua normal
+    			numRostro++;
+        		cont++;
+    		}
+    		else{
+    			if(isImageFalsePositive(cameraName, new File(srcSalida))){
+        			new File(srcSalida).delete();
+        		}
+        		else{
+        			numRostro++;
+            		cont++;
+            		/*
+            		 * Test
+            		 * Imgcodecs.imwrite(srcSalida, frame);
+            		 */
+        		}
+    		}
         } 
         return numRostro;
     }
     
-    public int reconocerRostro(Mat imagen, MatOfRect faceDetections, int cont, String userFolderPath, String cameraName) throws Exception{
+	public void saveFalsesPositivesImages(String ipCameraName, String imagesFalsePostivePath){
+		//Recoger todas las imágenes de la carpeta donde las guardo
+		FilenameFilter imgFilter = new FilenameFilter() { 
+			public boolean accept(File dir, String name) { 
+                name = name.toLowerCase(); 
+                return name.endsWith(".jpg") || name.endsWith(".pgm") || name.endsWith(".png"); 
+            } 
+        }; 
+        
+    	File root = new File(imagesFalsePostivePath); 
     	
-    	 Cascade.detectMultiScale(imagen, faceDetections);
-    	 int numRostro = 0;
-         for (Rect rect : faceDetections.toArray()) {
-        	 Imgproc.rectangle(imagen, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height), new Scalar(0, 255, 0));
-        	 
-        	 String srcSalida = userFolderPath+"/"+cameraName+"_img"+cont+".jpg";
-        	 
-        	//Se guarda la imagen
-     		Imgcodecs.imwrite(srcSalida, imagen);
-     		
-        	 numRostro++;
-        	 cont++;
-         }
-         return numRostro;
-         
-    } 
+    	if(!imagesFalsesPostives.containsKey(ipCameraName)){
+    		imagesFalsesPostives.put(ipCameraName, root.listFiles(imgFilter));
+		}
+	}
+	
+    public boolean isImageFalsePositive(String cameraName, File newImage){
+		File[] imagesFalsePositive = imagesFalsesPostives.get(cameraName);
+    	for (File imageFalsePositive : imagesFalsePositive) {
+			if(compareImage(imageFalsePositive, newImage)){
+				return true;
+			}
+		}
+    	return false;
+    }
+	
+	private boolean compareImage(File fileA, File fileB) {        
+	    try {
+	        //take buffer data from botm image files //
+	        BufferedImage biA = ImageIO.read(fileA);
+	        DataBuffer dbA = biA.getData().getDataBuffer();
+	        int sizeA = dbA.getSize();                      
+	        BufferedImage biB = ImageIO.read(fileB);
+	        DataBuffer dbB = biB.getData().getDataBuffer();
+	        int sizeB = dbB.getSize();
+	        //compare data-buffer objects //
+	        if(sizeA == sizeB) {
+	            for(int i=0; i<sizeA; i++) { 
+	                if(dbA.getElem(i) != dbB.getElem(i)) {
+	                    return false;
+	                }
+	            }
+	            return true;
+	        }
+	        else {
+	            return false;
+	        }
+	    } 
+	    catch (Exception e) { 
+	        //"Failed to compare image files ..."
+	        return  false;
+	    }
+	}
     
     public static void resizePrueba(BufferedImage src, OutputStream output, int width, int height) throws Exception {
     	//BufferedImage src = GraphicsUtilities.createThumbnail(ImageIO.read(file), 300);
@@ -107,6 +166,33 @@ public class FacialDetection {
 	    ImageIO.write(dest, "JPG", output);
 	    output.close();
 	}
+    
+    public Mat readInputStreamIntoMat(InputStream inputStream) throws IOException {
+	    // Read into byte-array
+	    byte[] temporaryImageInMemory = readStream(inputStream);
+	    Mat outputImage = Imgcodecs.imdecode(new MatOfByte(temporaryImageInMemory), -1);
+	    return outputImage;
+	}
+    
+    private byte[] readStream(InputStream stream) throws IOException {
+	    // Copy content of the image to byte-array
+	    ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+	    int nRead;
+	    byte[] data = new byte[16384];
+	    while ((nRead = stream.read(data, 0, data.length)) != -1) {
+	        buffer.write(data, 0, nRead);
+	    }
+	    buffer.flush();
+	    byte[] temporaryImageInMemory = buffer.toByteArray();
+	    buffer.close();
+	    stream.close();
+	    return temporaryImageInMemory;
+	}
+
+	public Map<String, File[]> getImagesFalsesPostives() {
+		return imagesFalsesPostives;
+	}
+	
 	
 }
 

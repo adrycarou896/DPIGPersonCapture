@@ -18,10 +18,10 @@ public class Util {
 	public void setFolderCamerasPath(String folderCamerasPath) {
 		this.folderCamerasPath = folderCamerasPath;
 	}
-	public String getFolderUsersPath() {
+	public String getFolderPersonsPath() {
 		return folderUsersPath;
 	}
-	public void setFolderUsersPath(String folderUsersPath) {
+	public void setFolderPersonsPath(String folderUsersPath) {
 		this.folderUsersPath = folderUsersPath;
 	}
 	public String getSmartThingsToken() {

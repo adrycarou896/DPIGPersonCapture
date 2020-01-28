@@ -35,17 +35,18 @@ public class IPCameraManager {
 		return null;
 	}
 	
-	public List<IPCamera> getIPCameras(JSONArray devicesJSON){
+	private List<IPCamera> getIPCameras(JSONArray devicesJSON){
 		List<IPCamera> cameras = new ArrayList<IPCamera>();
 		for (int i = 0; i < devicesJSON.length(); i++) {
 			JSONObject deviceJSON = new JSONObject(devicesJSON.get(i).toString());
 			
 			String deviceId = deviceJSON.get("deviceId").toString();
 			String name = deviceJSON.get("name").toString();
-			IPCamera ipCamera = new IPCamera(deviceId, name);
-			
-			cameras.add(ipCamera);
-			
+			String type = deviceJSON.get("type").toString();
+			if(type.equals("DTH")){
+				IPCamera ipCamera = new IPCamera(deviceId, name);
+				cameras.add(ipCamera);
+			}
 		}
 		return cameras;
 	}
@@ -58,7 +59,7 @@ public class IPCameraManager {
 	   
 	    InputStream is = connection.getInputStream();
 	    OutputStream os = new FileOutputStream(destinationFile);
-	   
+	    
 	    byte[] b = new byte[2048];
 	    int length;
 
@@ -70,7 +71,7 @@ public class IPCameraManager {
 	    os.close();
 	}
 	
-	public JSONArray getJSONDevices() throws IOException {
+	private JSONArray getJSONDevices() throws IOException {
 		
 		JSONObject responseJSON = getSimpleRequest(Util.SMARTTHINGS_DEVICES);
 
