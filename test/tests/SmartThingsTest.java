@@ -26,7 +26,7 @@ public class SmartThingsTest {
 	}
 	
 	@Test
-	public void getIPCameras() {
+	public void PU01() {
 		List<IPCamera> cameras = ipCameraManager.getIPCameras();
 		
 		assertTrue(cameras.size()>0);
@@ -56,7 +56,7 @@ public class SmartThingsTest {
 	}
 	
 	@Test
-	public void getIPCameraVideoURL() throws IOException {
+	public void PU02() throws IOException {
 		List<IPCamera> cameras = ipCameraManager.getIPCameras();
 		
 		for (IPCamera ipCamera : cameras) {

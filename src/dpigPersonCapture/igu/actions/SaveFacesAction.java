@@ -1,16 +1,9 @@
 package dpigPersonCapture.igu.actions;
 
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FilenameFilter;
-import java.io.InputStream;
 import java.util.List;
-
-import javax.imageio.ImageIO;
-
-import org.opencv.core.Mat;
 
 import dpigPersonCapture.facialDetection.FacialDetection;
 import dpigPersonCapture.reader.ReadVideoFrames;
@@ -76,14 +69,7 @@ public class SaveFacesAction {
 		       
 		    int cont = finalFolderImages.length+1;
 			for (BufferedImage image : images) {
-				ByteArrayOutputStream os = new ByteArrayOutputStream();
-				ImageIO.write(image, "jpg", os);
-				InputStream is = new ByteArrayInputStream(os.toByteArray());
-				
-				Mat frame = facialDetection.readInputStreamIntoMat(is);
-				Mat frame_gray = new Mat();
-				
-				cont = cont + facialDetection.detectAndSave(frame, frame_gray, cont, saveFolderPath, cameraName);
+				cont = cont + facialDetection.detectAndSave(image, cont, saveFolderPath, cameraName);
 			}
 			return Messages.saveFramesSuccesfully;
 			

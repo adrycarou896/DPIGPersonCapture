@@ -6,6 +6,7 @@ import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FilenameFilter;
@@ -44,8 +45,14 @@ public class FacialDetection {
     }
 
     //Mat frame_gray = new Mat();
-    public int detectAndSave(Mat frame, Mat frame_gray, int cont, String camerasFolderPath, String cameraName) throws Exception{
+    public int detectAndSave(BufferedImage image, int cont, String camerasFolderPath, String cameraName) throws Exception{
     	this.rostros = new MatOfRect();
+    	
+    	ByteArrayOutputStream os = new ByteArrayOutputStream();
+		ImageIO.write(image, "jpg", os);
+		InputStream frameInputStream = new ByteArrayInputStream(os.toByteArray());
+    	Mat frame = readInputStreamIntoMat(frameInputStream);
+    	Mat frame_gray = new Mat();
     	
     	Imgproc.cvtColor(frame, frame_gray, Imgproc.COLOR_BGR2GRAY);//Colvierte la imagene a color a blanco y negro
         Imgproc.equalizeHist(frame_gray, frame_gray);//Valanzeamos los tonos grises

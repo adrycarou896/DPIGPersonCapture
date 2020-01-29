@@ -29,7 +29,7 @@ public class SaveFacesTest {
 	}
 	
 	@Test
-	public void saveFacesNotExistPersonName() {
+	public void PU06() {
 		personName = null;
 		SaveFacesAction saveFacesAction = new SaveFacesAction(personName, cameraName, videoPath, saveFolderPath, finalPath, facialDetection);
 		String messageResult = saveFacesAction.saveFaces();
@@ -42,7 +42,7 @@ public class SaveFacesTest {
 	}
 	
 	@Test
-	public void saveFacesNotExistCameraName() {
+	public void PU07() {
 		cameraName = null;
 		SaveFacesAction saveFacesAction = new SaveFacesAction(personName, cameraName, videoPath, saveFolderPath, finalPath, facialDetection);
 		String messageResult = saveFacesAction.saveFaces();
@@ -55,7 +55,7 @@ public class SaveFacesTest {
 	}
 	
 	@Test
-	public void saveFacesNotExistVideo() {
+	public void PU08() {
 		videoPath = null;
 		SaveFacesAction saveFacesAction = new SaveFacesAction(personName, cameraName, videoPath, saveFolderPath, finalPath, facialDetection);
 		String messageResult = saveFacesAction.saveFaces();
@@ -68,7 +68,7 @@ public class SaveFacesTest {
 	}
 	
 	@Test
-	public void saveFacesNotExistSaveFolderPath() {
+	public void PU09() {
 		saveFolderPath = null;
 		SaveFacesAction saveFacesAction = new SaveFacesAction(personName, cameraName, videoPath, saveFolderPath, finalPath, facialDetection);
 		String messageResult = saveFacesAction.saveFaces();
@@ -81,7 +81,7 @@ public class SaveFacesTest {
 	}
 	
 	@Test
-	public void saveFacesNotExistFinalPath() {
+	public void PU10() {
 		finalPath = null;
 		SaveFacesAction saveFacesAction = new SaveFacesAction(personName, cameraName, videoPath, saveFolderPath, finalPath, facialDetection);
 		String messageResult = saveFacesAction.saveFaces();
@@ -94,7 +94,7 @@ public class SaveFacesTest {
 	}
 	
 	@Test
-	public void saveFacesSuccesfully(){
+	public void PU11(){
 		SaveFacesAction saveFacesAction = new SaveFacesAction(personName, cameraName, videoPath, saveFolderPath, finalPath, facialDetection);
 		String messageResult = saveFacesAction.saveFaces();
 		assertEquals(Messages.saveFramesSuccesfully,messageResult);

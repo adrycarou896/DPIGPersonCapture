@@ -21,14 +21,14 @@ public class ResetImagesNamesTest {
 	}
 	
 	@Test
-	public void resetImagesNamesImagenesConNombreDesordenado() {
+	public void PU12() {
 		ResetImagesNamesAction resetImagesNamesAction = new ResetImagesNamesAction(personName, cameraName, saveFolderPath, finalPath);
 		String messageResult = resetImagesNamesAction.resetImagesNames();
 		assertEquals(Messages.resetImagesNamesSuccesfuly,messageResult);
 	}
 	
 	@Test
-	public void resetImagesNamesSaveFolderNotExist() {
+	public void PU13() {
 		saveFolderPath = "test/img/resetImagesNamesTest/invisibleDirectory/";
 		ResetImagesNamesAction resetImagesNamesAction = new ResetImagesNamesAction(personName, cameraName, saveFolderPath, finalPath);
 		String messageResult = resetImagesNamesAction.resetImagesNames();
