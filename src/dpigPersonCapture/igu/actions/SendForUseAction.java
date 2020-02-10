@@ -21,20 +21,13 @@ public class SendForUseAction {
 	}
 	
 	public String sendForUse(){
-		if(personName==null || personName.isEmpty()){
-			return Messages.personNameError;
-		}
-		if(cameraName==null || cameraName.isEmpty()){
-			return Messages.cameraNameError;
-		}
-		if(saveFolderPath==null || saveFolderPath.isEmpty() || finalPath==null || finalPath.isEmpty()){
-			return Messages.pathError;
-		}
-		saveFolderPath = saveFolderPath+"/"+cameraName+"/Frames/"+personName;
+		
 		File saveFolder = new File(saveFolderPath); 
-		if(!saveFolder.exists()){
-			return Messages.trainingPathNotExistError;
+		String validateEntries = validateEntries(saveFolder);
+		if(validateEntries!=null){
+			return validateEntries;
 		}
+		
 		FilenameFilter imgFilter = new FilenameFilter() { 
 			public boolean accept(File dir, String name) { 
                 name = name.toLowerCase(); 
@@ -69,4 +62,21 @@ public class SendForUseAction {
     	 }
          return Messages.sendForUseSuccesfuly;
     }
+	
+	private String validateEntries(File saveFolder){
+		if(personName==null || personName.isEmpty()){
+			return Messages.personNameError;
+		}
+		if(cameraName==null || cameraName.isEmpty()){
+			return Messages.cameraNameError;
+		}
+		if(saveFolderPath==null || saveFolderPath.isEmpty() || finalPath==null || finalPath.isEmpty()){
+			return Messages.pathError;
+		}
+		saveFolderPath = saveFolderPath+"/"+cameraName+"/Frames/"+personName;
+		if(!saveFolder.exists()){
+			return Messages.trainingPathNotExistError;
+		}
+		return null;
+	}
 }

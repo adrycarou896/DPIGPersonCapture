@@ -21,19 +21,11 @@ public class ResetImagesNamesAction {
 	}
 	
 	public String resetImagesNames(){
-		if(personName==null || personName.isEmpty()){
-			return Messages.personNameError;
-		}
-		if(cameraName==null || cameraName.isEmpty()){
-			return Messages.cameraNameError;
-		}
-		if(saveFolderPath==null || saveFolderPath.isEmpty() || finalPath==null || finalPath.isEmpty()){
-			return Messages.pathError;
-		}
-		saveFolderPath = saveFolderPath+"/"+cameraName+"/Frames/"+personName;
+		
 		File saveFolder = new File(saveFolderPath);
-		if(!saveFolder.exists()){
-			return Messages.trainingPathNotExistError;
+		String validateEntries = validateEntries(saveFolder);
+		if(validateEntries!=null){
+			return validateEntries;
 		}
 			
 		FilenameFilter imgFilter = new FilenameFilter() { 
@@ -50,8 +42,6 @@ public class ResetImagesNamesAction {
         }
        
         File[] finalFolderImages = finalFolder.listFiles(imgFilter);
-        
-        //List<File> imagesList = orderList(userFolder.listFiles(imgFilter),userName);
         
         String folderCopyPath = saveFolderPath+"/copy";
         File folderCopy = new File(folderCopyPath);
@@ -101,4 +91,20 @@ public class ResetImagesNamesAction {
         
         return Messages.resetImagesNamesSuccesfuly;
     }
+	
+	private String validateEntries(File saveFolder){
+		if(personName==null || personName.isEmpty()){
+			return Messages.personNameError;
+		}
+		if(cameraName==null || cameraName.isEmpty()){
+			return Messages.cameraNameError;
+		}
+		if(saveFolderPath==null || saveFolderPath.isEmpty() || finalPath==null || finalPath.isEmpty()){
+			return Messages.pathError;
+		}
+		if(!saveFolder.exists()){
+			return Messages.trainingPathNotExistError;
+		}
+		return null;
+	}
 }

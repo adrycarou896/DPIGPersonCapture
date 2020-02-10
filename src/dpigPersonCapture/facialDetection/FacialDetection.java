@@ -2,8 +2,6 @@ package dpigPersonCapture.facialDetection;
 
 import static org.opencv.objdetect.Objdetect.CASCADE_SCALE_IMAGE;
 
-import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
 import java.io.ByteArrayInputStream;
@@ -12,7 +10,6 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -82,7 +79,7 @@ public class FacialDetection {
     		String srcSalida = camerasFolderPath+"/"+cameraName+"_img"+cont+".jpg";
     		
     		Mat frameFinal = new Mat();
-    		Imgproc.resize(frameRecortado, frameFinal, new Size(52,52));
+    		Imgproc.resize(frameRecortado, frameFinal, new Size(100,100));
     		
     		//Se guarda la imagen
     		Imgcodecs.imwrite(srcSalida, frameFinal);
@@ -90,6 +87,7 @@ public class FacialDetection {
     		if(!this.imagesFalsesPostives.containsKey(cameraName)){//Si no se quiere utilizar la bbdd de falsos positivos -> actua normal
     			numRostro++;
         		cont++;
+        		//Imgcodecs.imwrite(srcSalida, frame);
     		}
     		else{
     			if(isImageFalsePositive(cameraName, new File(srcSalida))){
@@ -124,7 +122,7 @@ public class FacialDetection {
 		}
 	}
 	
-    public boolean isImageFalsePositive(String cameraName, File newImage){
+    private boolean isImageFalsePositive(String cameraName, File newImage){
 		File[] imagesFalsePositive = imagesFalsesPostives.get(cameraName);
     	for (File imageFalsePositive : imagesFalsePositive) {
 			if(compareImage(imageFalsePositive, newImage)){
@@ -162,19 +160,7 @@ public class FacialDetection {
 	    }
 	}
     
-    public static void resizePrueba(BufferedImage src, OutputStream output, int width, int height) throws Exception {
-    	//BufferedImage src = GraphicsUtilities.createThumbnail(ImageIO.read(file), 300);
-	    BufferedImage dest = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-	    Graphics2D g = dest.createGraphics();
-	    AffineTransform at = AffineTransform.getScaleInstance
-	    		((double)width / src.getWidth(), 
-	    				(double)height / src.getHeight());
-	    g.drawRenderedImage(src, at);
-	    ImageIO.write(dest, "JPG", output);
-	    output.close();
-	}
-    
-    public Mat readInputStreamIntoMat(InputStream inputStream) throws IOException {
+    private Mat readInputStreamIntoMat(InputStream inputStream) throws IOException {
 	    // Read into byte-array
 	    byte[] temporaryImageInMemory = readStream(inputStream);
 	    Mat outputImage = Imgcodecs.imdecode(new MatOfByte(temporaryImageInMemory), -1);
@@ -194,10 +180,6 @@ public class FacialDetection {
 	    buffer.close();
 	    stream.close();
 	    return temporaryImageInMemory;
-	}
-
-	public Map<String, File[]> getImagesFalsesPostives() {
-		return imagesFalsesPostives;
 	}
 	
 	

@@ -37,7 +37,7 @@ public class SmartThingsTest {
 		for (IPCamera ipCamera : cameras) {
 			String deviceId = ipCamera.getDeviceId();
 			assertTrue(!deviceId.isEmpty());
-			assertNotNull(deviceId);//Comprobar que el deviceId no es null
+			assertNotNull(deviceId);
 			
 			String name = ipCamera.getName();
 			if(!cameraNames.contains(name)){
@@ -45,8 +45,8 @@ public class SmartThingsTest {
 			}
 			
 			if(deviceId.equals(deviceIdCamera1) || deviceId.equals(deviceIdCamera2)){
-				assertNotNull(ipCamera.getName());//Comprobar que el nombre no es null
-				assertTrue(!ipCamera.getName().isEmpty());//Comprobar que el nombre no esté vacío
+				assertNotNull(ipCamera.getName());
+				assertTrue(!ipCamera.getName().isEmpty());
 				camarasRegistradasEnEsteMomento.add(ipCamera);
 				
 			}

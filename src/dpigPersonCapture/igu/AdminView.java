@@ -19,11 +19,10 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
-import dpigPersonCapture.facialDetection.FacialDetection;
 import dpigPersonCapture.igu.actions.ResetImagesNamesActionButtom;
-import dpigPersonCapture.igu.actions.SendForUseActionButtom;
 import dpigPersonCapture.igu.actions.SaveFacesActionButtom;
-import dpigPersonCapture.igu.actions.ViewVideoAction;
+import dpigPersonCapture.igu.actions.SendForUseActionButtom;
+import dpigPersonCapture.igu.actions.ViewVideoActionButtom;
 import dpigPersonCapture.model.IPCamera;
 import dpigPersonCapture.smartThings.IPCameraManager;
 import dpigPersonCapture.utils.Messages;
@@ -42,7 +41,7 @@ public class AdminView extends JFrame {
 
 	private JPanel contentPane;
 	
-	IPCameraManager ipCamerasManager;
+	IPCameraManager ipCamerasManager;  
 	List<IPCamera> ipCameras;
 	
 	private String videoPath;
@@ -67,17 +66,15 @@ public class AdminView extends JFrame {
 	
 	private Util util;
 	
-	private FacialDetection facialDetection;
-	
 	/**
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
 		args = new String[3];
-		args[0] = "img/cameras";
-		args[1] = "img/cameras/Camera1/Frames";
+		args[0] = "img/pruebas";
+		args[1] = "D:/TFG/PRUEBA/entrenamiento";
+		//args[1] = "D:/TFG/DPIGServer/src/test/java/files/trainingImages/individuo1";
 		args[2] = "82c908bc-daec-4b43-b643-08b90273923e";
-		
 		String folderCamerasPath = args[0];
 		String folderUsersPath = args[1];
 		String smartThingsToken = args[2];
@@ -132,8 +129,6 @@ public class AdminView extends JFrame {
 		setLocationRelativeTo(null);
 		
 		getPanel();
-		
-		this.facialDetection = new FacialDetection();
 		
 		
 	}
@@ -272,7 +267,7 @@ public class AdminView extends JFrame {
 		if (btVerVideo == null) {
 			btVerVideo = new JButton("Ver video");
 			btVerVideo.setToolTipText("Visualizar el \u00FAltimo video de la c\u00E1mara seleccionada");
-			btVerVideo.addActionListener(new ViewVideoAction(this));
+			btVerVideo.addActionListener(new ViewVideoActionButtom(this));
 		}
 		return btVerVideo;
 	}
@@ -335,10 +330,6 @@ public class AdminView extends JFrame {
 	public Util getUtil(){
 		return this.util;
 	}
-
-	public FacialDetection getFacialDetection() {
-		return facialDetection;
-	}
 	
 	public void showMessage(String message){
 		switch (message) {
@@ -363,9 +354,17 @@ public class AdminView extends JFrame {
 		case Messages.trainingPathNotExistError:
 			JOptionPane.showMessageDialog(null, Messages.trainingPathNotExistError, Messages.trainingPathNotExistErrorHeader, JOptionPane.ERROR_MESSAGE);
 			break;
+		case Messages.viewVideoError:
+			JOptionPane.showMessageDialog(null, Messages.viewVideoError, Messages.viewVideoErrorHeader, JOptionPane.ERROR_MESSAGE);
+			break;
+		case Messages.sendForUseSuccesfuly:
+			JOptionPane.showMessageDialog(null, Messages.sendForUseSuccesfuly);
+			break;
 		default:
 			break;
 		}
+		
+		
 	}
 	
 }

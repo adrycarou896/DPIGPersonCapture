@@ -13,42 +13,32 @@ public class SaveFacesAction {
 	
 	private String personName, cameraName, videoPath, saveFolderPath, finalPath;
 	private FacialDetection facialDetection;
+	ReadVideoFrames decodeAndCaptureFrames;
 	
 	
-	public SaveFacesAction(String personName, String cameraName, String videoPath, String saveFolderPath, String finalPath,
-			FacialDetection facialDetection) {
+	public SaveFacesAction(String personName, String cameraName, String videoPath, String saveFolderPath, String finalPath) {
 		this.personName = personName;
 		this.cameraName = cameraName;
 		this.videoPath = videoPath;
 		this.saveFolderPath = saveFolderPath;
 		this.finalPath = finalPath;
-		this.facialDetection = facialDetection;
+		this.facialDetection = new FacialDetection();
 	}
 
 
 	public String saveFaces(){
-		if(personName==null || personName.isEmpty()){
-			return Messages.personNameError;
-		}
-		if(cameraName==null || cameraName.isEmpty()){
-			return Messages.cameraNameError;
-		}
-		if(videoPath==null || videoPath.isEmpty()){
-			return Messages.videoError;
-		}
-		if(saveFolderPath==null || saveFolderPath.isEmpty() || finalPath==null || finalPath.isEmpty()){
-			return Messages.pathError;
+		String validateEntries = validateEntries();
+		if(validateEntries!=null){
+			return validateEntries;
 		}
 		
-		saveFolderPath = saveFolderPath + "/" + cameraName + "/Frames/" + personName;
 		finalPath = finalPath + "/" + personName;
 		
 		File saveFolder = new File(saveFolderPath);
 		if(!saveFolder.exists()){
 			saveFolder.mkdirs();
 		}
-				
-		ReadVideoFrames decodeAndCaptureFrames;
+
 		try {
 			decodeAndCaptureFrames = new ReadVideoFrames(videoPath);
 			List<BufferedImage>images = decodeAndCaptureFrames.getImages();
@@ -76,6 +66,22 @@ public class SaveFacesAction {
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		}	
+		return null;
+	}
+	
+	private String validateEntries(){
+		if(personName==null || personName.isEmpty()){
+			return Messages.personNameError;
+		}
+		if(cameraName==null || cameraName.isEmpty()){
+			return Messages.cameraNameError;
+		}
+		if(videoPath==null || videoPath.isEmpty()){
+			return Messages.videoError;
+		}
+		if(saveFolderPath==null || saveFolderPath.isEmpty() || finalPath==null || finalPath.isEmpty()){
+			return Messages.pathError;
+		}
 		return null;
 	}
 }

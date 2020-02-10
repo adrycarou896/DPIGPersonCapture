@@ -13,7 +13,7 @@ public class Messages {
 	public static final String pathError = "Error en ruta de pruebas o de entrenamiento"; 
 	public static final String pathErrorHeader = "Error en ruta"; 
 	
-	public static final String videoError = "No existe ningún video"; 
+	public static final String videoError = "No existe ningún video";  
 	public static final String videoErrorHeader = "Error video"; 
 	
 	//----------------
@@ -26,4 +26,9 @@ public class Messages {
 	//----------------
 	
 	public static final String sendForUseSuccesfuly = "Las imágenes se han enviado correctamente para su uso";
+	
+	//----------------
+	
+	public static final String viewVideoError = "La cámara no dispone de ningún video para mostrar";
+	public static final String viewVideoErrorHeader = "Cámara no dispone";
 }

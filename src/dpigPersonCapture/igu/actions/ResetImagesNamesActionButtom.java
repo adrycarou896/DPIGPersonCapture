@@ -18,7 +18,7 @@ public class ResetImagesNamesActionButtom implements ActionListener{
 	public void actionPerformed(ActionEvent e) {
 		String personName = adminView.getCampoUsuario().getText();
 		String cameraName = adminView.getComboCamaras().getSelectedItem().toString();
-		String saveFolderPath = adminView.getUtil().getFolderCamerasPath();
+		String saveFolderPath = adminView.getUtil().getFolderCamerasPath() +"/"+cameraName+"/Frames/"+personName;
 		String finalPath = adminView.getUtil().getFolderPersonsPath();
 		restImagesNamesAction = new ResetImagesNamesAction(personName, cameraName, saveFolderPath, finalPath);
 		

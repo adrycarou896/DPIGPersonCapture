@@ -3,7 +3,6 @@ package dpigPersonCapture.igu.actions;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import dpigPersonCapture.facialDetection.FacialDetection;
 import dpigPersonCapture.igu.AdminView;
 
 public class SaveFacesActionButtom implements ActionListener{
@@ -20,10 +19,9 @@ public class SaveFacesActionButtom implements ActionListener{
 		String personName = adminView.getCampoUsuario().getText();
 		String cameraName = adminView.getComboCamaras().getSelectedItem().toString();
 		String videoPath = adminView.getVideoPath();
-		String saveFolderPath = adminView.getUtil().getFolderCamerasPath();
+		String saveFolderPath = adminView.getUtil().getFolderCamerasPath() +"/"+cameraName+"/Frames/"+personName;;
 		String finalPath = adminView.getUtil().getFolderPersonsPath();
-		FacialDetection facialDetection = adminView.getFacialDetection();
-		saveFrames = new SaveFacesAction(personName, cameraName, videoPath, saveFolderPath, finalPath,facialDetection);
+		saveFrames = new SaveFacesAction(personName, cameraName, videoPath, saveFolderPath, finalPath);
 		
 		String messageResult = saveFrames.saveFaces();
 		this.adminView.showMessage(messageResult);
